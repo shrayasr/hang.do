@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 from BeautifulSoup import BeautifulSoup
 
 def getRestaurants(pageNo):
@@ -92,7 +93,10 @@ def getRestaurants(pageNo):
         # get the first one
         telItem = articleDetailPage.findAll('span',{'class':'tel'})
         if len(telItem) > 1:
-            itemPhone = telItem[1].contents[0].strip()
+            if "Not Available" in telItem[1].contents[0]:
+                itemPhone = ""
+            else:
+                itemPhone = telItem[1].contents[0].strip()
         else:
             itemPhone = telItem[0].contents[0].strip()
 
@@ -118,5 +122,14 @@ def getRestaurants(pageNo):
 
         count += 1
 
-for i in xrange(1,192):
-    getRestaurants(str(i))
+if __name__ == "__main__":
+
+    if len(sys.argv) == 1:
+        print "min 1 parameter required (page to start from)"
+        sys.exit(1)
+
+    startPage = int(sys.argv[1])
+    
+    print "Scraping from page number: " + str(startPage)
+    for i in xrange(startPage,192):
+        getRestaurants(str(i))
