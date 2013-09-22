@@ -5,7 +5,7 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('placesdb', server);
+db = new Db('placesdb', server,{w:1});
 
 db.open(function(err, db) {
   if(!err) {
@@ -20,10 +20,6 @@ db.open(function(err, db) {
     });
   }
 });
-
-exports.findAll = function(req, res) {
-  res.send('no!!!!!');
-};
 
 exports.findById = function(req, res) {
   var id = req.params.id;
@@ -49,3 +45,4 @@ exports.addPlace = function(req,res) {
     });
   });
 };
+
