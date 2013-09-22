@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 from BeautifulSoup import BeautifulSoup
 
 def getRestaurants(pageNo):
@@ -67,7 +68,11 @@ def getRestaurants(pageNo):
                 itemLocationCoarse += locationParts.strip()
 
         # Pick up a specific location
-        itemLocationSpecific = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
+        itemLocationContainer = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})
+        if len(itemLocationContainer) > 0:
+            itemLocationSpecific = itemLocationContainer[0].contents[0].strip()
+        else:
+            itemLocationSpecific = ""
 
         # Pick up a rating string
         itemRatingString = articleDetailPage.findAll('b',{'class':'rating-text-div rrw-rating-text'})[0].contents[0].strip()
@@ -92,7 +97,10 @@ def getRestaurants(pageNo):
         # get the first one
         telItem = articleDetailPage.findAll('span',{'class':'tel'})
         if len(telItem) > 1:
-            itemPhone = telItem[1].contents[0].strip()
+            if "Not Available" in telItem[1].contents[0]:
+                itemPhone = ""
+            else:
+                itemPhone = telItem[1].contents[0].strip()
         else:
             itemPhone = telItem[0].contents[0].strip()
 
@@ -118,5 +126,14 @@ def getRestaurants(pageNo):
 
         count += 1
 
-for i in xrange(1,192):
-    getRestaurants(str(i))
+if __name__ == "__main__":
+
+    if len(sys.argv) == 1:
+        print "min 1 parameter required (page to start from)"
+        sys.exit(1)
+
+    startPage = int(sys.argv[1])
+    
+    print "Scraping from page number: " + str(startPage)
+    for i in xrange(startPage,192):
+        getRestaurants(str(i))
