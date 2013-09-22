@@ -28,7 +28,11 @@ exports.get = function(req, res) {
   var data = {};
   
   var coll = db.collection('places');
-  var val = coll.find({'$and':[{location_specific:place},{type:'movie'}]},{sort:{rating:-1}}).toArray(function(err, item) {
+  var lcRegex = new RegExp('.*'+place+'.*');
+  var query = {'$and':[{location_coarse: lcRegex},{type:'movie'}]};
+  console.log(JSON.stringify(query));
+  console.log(JSON.stringify(lcRegex));
+  var val = coll.find(query,{sort:{rating:-1}}).toArray(function(err, item) {
     var data = {};
     data.movie = item;
     var val = coll.find({'$and':[{location_specific:place},{type:'restaurant'}]},{sort:{rating:-1}}).toArray(function(err, item) {
