@@ -102,7 +102,10 @@ def getRestaurants(pageNo):
             else:
                 itemPhone = telItem[1].contents[0].strip()
         else:
-            itemPhone = telItem[0].contents[0].strip()
+            if len(telItem) > 0:
+                itemPhone = telItem[0].contents[0].strip()
+            else:
+                itemPhone = ""
 
         # Generate a payload
         payload = {
