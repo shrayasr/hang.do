@@ -49,8 +49,6 @@ for page in pagedata:
 
             t = info.split()
             movinth['lang'] = t[-1]
-            movs_in_theatre.append(movinth)
-
 
             #get show times for the movie
             timesli = list()
@@ -81,7 +79,20 @@ for page in pagedata:
                 rate = -1
             movinth['rating'] = rate
             
+            mtl = list()
+            names = [movinth['name']+'::==>'+time for time in movinth['times'] if time]
+            
+            for name in names:
+                tmp = dict()
+                tmp['name'] = name.split('::==>')[0]
+                tmp['time'] = name.split('::==>')[1]
+                tmp['lang'] = movinth['lang']
+                tmp['info'] = movinth['info']
+                tmp['rating'] = movinth['rating']
+                tmp['link'] = movinth['link']
+                mtl.append(tmp)
 
+            movs_in_theatre += mtl
         # theater name 
         name = theater.findAll('h2',{'class':'name'})[0].a.contents[0]
         print '-'*80
@@ -101,37 +112,43 @@ for page in pagedata:
         except:
             pass
 
-        print movs_in_theatre
-        print address
         if address is not None:
-            caddr = address.split(',')[-3]
+            try:
+                caddr = address.split(',')[-3].strip(' ')
+            except:
+                caddr = None
         else:
             caddr = None
 
-        '''
-        if address is not None:
-            try :
-                int(address.split(',')[-1])
-                caddr = address.split(',')[-4]
-            except:
-                caddr = address.split()[-3].strip(',')
-        else :
-            caddr = None
-        '''
-        tmp['name'] = name
-        tmp['coarse-address'] = address
-        tmp['fine-address'] = caddr
-        tmp['mapurl'] = mapurl
-        tmp['movies'] = movs_in_theatre
-        theaters_data.append(tmp)
-        requests.post('http://localhost:3000/places',data=json.dumps(tmp), headers=headers)
-        print '-'*80
+        for mov in movs_in_theatre:
 
-print theaters_data
+            tmp['name_extra'] = name
+            tmp['location_coarse'] = address
+            tmp['location_specific'] = caddr
+            tmp['mapurl'] = mapurl
+            tmp['type'] = "movie"
+            tmp['name'] = mov['name']
+            tmp['time'] = mov['time']
+            tmp['cost'] = str(0.0)
+            try:
+                tmp['rating'] = str(float(unicodedata.normalize('NFKD', mov['rating']).encode('ascii','ignore'))/2)
+            except TypeError:
+                tmp['rating'] = str(mov['rating'])
+            tmp['info'] = mov['info']
+            tmp['link'] = mov['link']
+            tmp['lang'] = mov['lang']
+
+            print tmp
+            print '-'*80
+            theaters_data.append(tmp)
+
+            requests.post('http://localhost:3000/places',data=json.dumps(tmp), headers=headers)
+
+#print theaters_data
 
 #dump the data in json format
-jsond = json.dumps(theaters_data)
-f = open('mov_data.json','w')
-f.write(jsond)
-f.close()
+#jsond = json.dumps(theaters_data)
+#f = open('mov_data.json','w')
+#f.write(jsond)
+#f.close()
 
