@@ -1,4 +1,5 @@
 import requests
+import json
 from BeautifulSoup import BeautifulSoup
 
 def getRestaurants(pageNo):
@@ -45,15 +46,16 @@ def getRestaurants(pageNo):
         # Get the name of the restaurant
         itemName = article.findAll('h3')[0].a.contents[0].strip()
 
+
         # Go inside the article page
         articlePage = requests.get(itemLink)  
 
         # Get a BS to that page
-        soupPage = BeautifulSoup(articlePage.text)
+        articleDetailPage = BeautifulSoup(articlePage.text)
 
         # Location is quite complex, BS handles it stupidly
         # Take the location area composite and pick up the contents
-        locationArrayComposite = soupPage.findAll('h4',{'class':'res-main-address-text left'}); 
+        locationArrayComposite = articleDetailPage.findAll('h4',{'class':'res-main-address-text left'}); 
         locationArray = locationArrayComposite[0].contents
 
         # for all the parts in the location
@@ -65,21 +67,46 @@ def getRestaurants(pageNo):
                 itemLocationCoarse += locationParts.strip()
 
         # Pick up a specific location
-        itemLocationSpecific = soupPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
+        itemLocationSpecific = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
 
         # Pick up a rating
-        itemRating = soupPage.findAll('b',{'class':'rating-text-div rrw-rating-text'})[0].contents[0].strip()
+        itemRatingString = articleDetailPage.findAll('b',{'class':'rating-text-div rrw-rating-text'})[0].contents[0].strip()
+
+        ratings = {
+                "legendary":5,
+                "excellent":4.5,
+                "very good":4,
+                "good":3.5,
+                "average":2.5,
+                "poor":2
+        }
+
+        itemRating = ratings[itemRatingString.lower()]
 
         # Pick up the cost
-        itemCost = soupPage.findAll('span',{'class':'cft-big'})[0].contents[0].strip()
+        itemCost = articleDetailPage.findAll('span',{'class':'cft-big'})[0].contents[0].strip()
 
         # There can be more than 1 telephone,
         # get the first one
-        telItem = soupPage.findAll('span',{'class':'tel'})
+        telItem = articleDetailPage.findAll('span',{'class':'tel'})
         if len(telItem) > 1:
             itemPhone = telItem[1].contents[0].strip()
         else:
             itemPhone = telItem[0].contents[0].strip()
+
+        payload = {
+                "name": itemName,
+                "name_extra": "",
+                "type": itemType,
+                "location_coarse": itemLocationCoarse,
+                "location_specific": itemLocationSpecific,
+                "rating": itemRating,
+                "cost": itemCost,
+                "phone": itemPhone,
+                "link": itemLink
+                }
+
+        print json.dumps(payload)
 
         '''
         print itemName + " ["+itemLink+"]"
@@ -89,5 +116,9 @@ def getRestaurants(pageNo):
 
         count += 1
 
+'''
 for i in xrange(1,192):
     getRestaurants(str(i))
+'''
+
+getRestaurants("1")
