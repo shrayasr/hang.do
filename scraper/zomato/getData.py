@@ -69,9 +69,10 @@ def getRestaurants(pageNo):
         # Pick up a specific location
         itemLocationSpecific = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
 
-        # Pick up a rating
+        # Pick up a rating string
         itemRatingString = articleDetailPage.findAll('b',{'class':'rating-text-div rrw-rating-text'})[0].contents[0].strip()
 
+        # Set the ratings
         ratings = {
                 "legendary":5,
                 "excellent":4.5,
@@ -81,6 +82,7 @@ def getRestaurants(pageNo):
                 "poor":2
         }
 
+        # Pick up the rating depending on the settings
         itemRating = ratings[itemRatingString.lower()]
 
         # Pick up the cost
@@ -94,31 +96,27 @@ def getRestaurants(pageNo):
         else:
             itemPhone = telItem[0].contents[0].strip()
 
+        # Generate a payload
         payload = {
                 "name": itemName,
                 "name_extra": "",
                 "type": itemType,
-                "location_coarse": itemLocationCoarse,
-                "location_specific": itemLocationSpecific,
+                "location_coarse": itemLocationCoarse.lower(),
+                "location_specific": itemLocationSpecific.lower(),
                 "rating": itemRating,
                 "cost": itemCost,
                 "phone": itemPhone,
                 "link": itemLink
                 }
 
-        print json.dumps(payload)
+        headers = {
+                "Content-Type":"application/json"
+        }
 
-        '''
-        print itemName + " ["+itemLink+"]"
-        print itemCost,itemRating
-        print itemLocationSpecific
-        '''
+        print "pushing to DB"
+        requests.post("http://localhost:3000/places",data=json.dumps(payload),headers=headers)
 
         count += 1
 
-'''
 for i in xrange(1,192):
     getRestaurants(str(i))
-'''
-
-getRestaurants("1")
