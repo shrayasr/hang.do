@@ -3,6 +3,7 @@ import requests
 import re
 import unicodedata
 import json
+import time as _time
 from BeautifulSoup import BeautifulSoup
 
 headers = {"Content-Type":"application/json"}
@@ -128,7 +129,30 @@ for page in pagedata:
             tmp['mapurl'] = mapurl
             tmp['type'] = "movie"
             tmp['name'] = mov['name']
-            tmp['time'] = mov['time']
+            mov['time'] = mov['time'].lower()
+
+            a = mov['time'].find('pm')
+            if a != -1:
+                mov['time'] = mov['time'][:a]
+                hrs = int(mov['time'].split(':')[0]) + 12
+                mins = int(mov['time'].split(':')[1])
+                secs = hrs * 3600 + mins * 60
+                tmp['time'] = _time.time() + secs
+
+            a = mov['time'].find('am')
+            if a != -1:
+                mov['time'] = mov['time'][:a]
+                hrs = int(mov['time'].split(':')[0])
+                mins = int(mov['time'].split(':')[1])
+                secs = hrs * 3600 + mins * 60
+                tmp['time'] = _time.time() + secs
+
+            if mov['time'].find('am') == -1 and mov['time'].find('pm') == -1:
+                hrs = int(mov['time'].split(':')[0]) + 12
+                mins = int(mov['time'].split(':')[1])
+                secs = hrs * 3600 + mins * 60
+                tmp['time'] = _time.time() + secs
+            
             tmp['cost'] = str(0.0)
             try:
                 tmp['rating'] = str(float(unicodedata.normalize('NFKD', mov['rating']).encode('ascii','ignore'))/2)
