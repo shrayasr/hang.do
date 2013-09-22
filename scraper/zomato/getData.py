@@ -68,7 +68,11 @@ def getRestaurants(pageNo):
                 itemLocationCoarse += locationParts.strip()
 
         # Pick up a specific location
-        itemLocationSpecific = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
+        itemLocationContainer = articleDetailPage.findAll('strong',{'itemprop':'addressLocality'})[0].contents[0].strip()
+        if len(itemLocationContainer > 0):
+            itemLocationSpecific = itemLocationContainer[0].contents[0].strip()
+        else:
+            itemLocationSpecific = ""
 
         # Pick up a rating string
         itemRatingString = articleDetailPage.findAll('b',{'class':'rating-text-div rrw-rating-text'})[0].contents[0].strip()
