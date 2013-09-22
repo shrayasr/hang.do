@@ -1,0 +1,41 @@
+{
+	"suggestions":[{
+	    "movie":{
+		"name":"Batman v/ Man of Steel",
+		"location":"PVR Cinemas Kormangala",
+		"address":"Kormangala",
+		"cost":"500",
+		"phone":"080-23446789",
+		"rating":"5"
+	    },
+	    "food":{
+		"name":"Little Italy",
+		"location":"Little Italy,Kormangala",
+		"address":"Behind Christ University,Kormangala",
+		"cost":"500",
+		"phone":"080-23445678",
+		"rating":"4"
+	    },
+	    "approx_budget":"1000"
+	    
+	},{
+	    "movie":{
+		"name":"Pacific Rim 2: The Ass Whooping!",
+		"location":"Inox, Kormangala",
+		"address":"Kormangala",
+		"cost":"250",
+		"phone":"080-23446789",
+		"rating":"2"
+	    },
+	    "food":{
+		"name":"Chutney Chang",
+		"location":"Chutney Chang,Kormangala",
+		"address":"Dairy Circle, Kormangala",
+		"cost":"400",
+		"phone":"080-23445678",
+		"rating":"4"
+	    },
+	    "approx_budget":"650"
+	    
+	}]
+}
