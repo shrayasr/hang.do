@@ -132,11 +132,12 @@ def getRestaurants(pageNo):
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print "min 1 parameter required (page to start from)"
+        print "min 2 parameter required (page to start from, page to end)"
         sys.exit(1)
 
     startPage = int(sys.argv[1])
+    endPage = int(sys.argv[2])
     
     print "Scraping from page number: " + str(startPage)
-    for i in xrange(startPage,192):
+    for i in xrange(startPage,endPage+1):
         getRestaurants(str(i))
