@@ -4,6 +4,7 @@ var express = require('express'),
     suggs = require('./routes/suggs');
 
 var app = express();
+// we need the parse the RAW input sent while POST/PUT/DELETE
 app.use(express.bodyParser());
 
 app.get('/', home.index);
