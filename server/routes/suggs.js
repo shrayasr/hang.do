@@ -21,6 +21,7 @@ db.open(function(err, db) {
   }
 });
 
+// suggest a place
 exports.get = function(req, res) {
   var place = req.params.place.toLowerCase();
   
@@ -29,12 +30,15 @@ exports.get = function(req, res) {
   
   var coll = db.collection('places');
   var lcRegex = new RegExp('.*'+place+'.*');
+  // regex the place name for movies from location_coarse
+  // FIXME, jayanagar also shows 'vijayanagar', avoid this
   var query = {'$and':[{location_coarse: lcRegex},{type:'movie'}]};
   console.log(JSON.stringify(query));
   console.log(JSON.stringify(lcRegex));
   var val = coll.find(query,{sort:{rating:-1}}).toArray(function(err, item) {
     var data = {};
     data.movie = item;
+    // get the restaurants, orderby by rating, 
     var val = coll.find({'$and':[{location_specific:place},{type:'restaurant'}]},{sort:{rating:-1}}).toArray(function(err, item) {
       data.rest = item;
       var send = [];
@@ -42,6 +46,7 @@ exports.get = function(req, res) {
         var hang = {};
         send.push({movie: data.movie[i], rest:data.rest[i]});
       }
+      // return an array of objects containing, movie & restaurant
       res.send(send);
     });
   });
