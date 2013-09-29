@@ -1,5 +1,7 @@
 var mongo = require('mongodb');
 
+// connect to monogdb,
+// @TODO move this piece out to a diff file
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
@@ -21,6 +23,7 @@ db.open(function(err, db) {
   }
 });
 
+// get a place by id
 exports.findById = function(req, res) {
   var id = req.params.id;
   console.log('Retrieving place: ' + id);
@@ -31,6 +34,7 @@ exports.findById = function(req, res) {
   });
 };
 
+// add a new place
 exports.addPlace = function(req,res) {
   var place = req.body;
   console.log('Adding place: ' + JSON.stringify(place));
